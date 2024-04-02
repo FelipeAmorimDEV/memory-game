@@ -21,7 +21,24 @@ const App = () => {
         jogadasindex: [...state.jogadasindex, action.payload.index] 
       }
     }
-  }, { cards, tentativas: 0, jogadas: [], jogadasindex: [] })
+
+    if (action.type === "reset_jogadas") {
+      return { ...state, jogadas: [], jogadasindex: [] }
+    }
+
+  }, { cards, tentativas: 0, jogadas: [], jogadasindex: [], match: [] })
+
+  useEffect(() => {
+    const maxJogada = state.jogadas.length === 2
+
+    if (maxJogada) {
+      console.log('timeout')
+      setTimeout(() => {
+        dispatch({ type: 'reset_jogadas' })
+      }, 500)
+    }
+    
+  }, [state.jogadas])
 
   function handleTurnCard(index, id) {
     dispatch({ type: 'turned_card', payload: { index, id } })
