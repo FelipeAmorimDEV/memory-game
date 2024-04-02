@@ -32,8 +32,12 @@ function reducer(state, action) {
     return { ...state, match: [...state.match, state.jogadas[0]], points: state.points + pointsPerMatch }
   }
 
-  if(action.type === "started_game") {
-    return {...state, appStatus: 'ready'}
+  if (action.type === "started_game") {
+    return { ...state, appStatus: 'ready' }
+  }
+
+  if(action.type === "restarted_game") {
+    return {...state, appStatus: 'menu', points: 0, tentativas: 0, jogadas: [], jogadasindex: [], match: []}
   }
 
 }
@@ -61,6 +65,10 @@ const App = () => {
       }, 500)
     }
 
+    if (state.match.length === state.cards.length / 2) {
+      alert("Parabéns, você encontrou todas as cartas!")
+    }
+
   }, [state.jogadas])
 
   function handleTurnCard(index, id) {
@@ -75,6 +83,9 @@ const App = () => {
     dispatch({ type: 'started_game' })
   }
 
+  function handleRestartGame() {
+    dispatch({ type: 'restarted_game' })
+  }
 
   return (
     <div className="app">
@@ -106,7 +117,7 @@ const App = () => {
                 </div>
               </div>
             ))}
-
+            <button className="restart-btn" onClick={handleRestartGame}>Reiniciar</button>
           </main>
         </>
       )}
