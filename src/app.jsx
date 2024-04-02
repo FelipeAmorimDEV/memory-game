@@ -125,9 +125,9 @@ const App = () => {
       {state.appStatus === 'ready' && (
         <>
           <div className="game-status">
-            <span>Attempts: {attemptsToMatchCards}</span>
-            <span>Points: <strong>{state.points}</strong> / {maxPoints}</span>
-            <span>Timer: 00:60</span>
+            <span>Attempts: <strong>{attemptsToMatchCards}</strong></span>
+            <span>Points: <strong>{state.points}</strong> / <strong>{maxPoints}</strong></span>
+            <span>Timer: <strong>00:60</strong></span>
           </div>
           <main className="board">
             {state.cards.map((card, index) => (
