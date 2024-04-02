@@ -12,25 +12,29 @@ const cards = [
   { id: 4, element: <Backpack size={60} weight="fill" color="#1a1a1a" /> },
 ]
 
+function reducer(state, action) {
+  if (action.type === "turned_card") {
+    return { 
+      ...state, 
+      jogadas: [...state.jogadas, action.payload.id], 
+      jogadasindex: [...state.jogadasindex, action.payload.index],
+      tentativas: state.tentativas + 1
+    }
+  }
+
+  if (action.type === "reset_jogadas") {
+    return { ...state, jogadas: [], jogadasindex: [] }
+  }
+
+  if (action.type === "matcheted_card") {
+    return { ...state, match: [...state.match, state.jogadas[0]] }
+  }
+
+}
 const App = () => {
-  const [state, dispatch] = useReducer((state, action) => {
-    if (action.type === "turned_card") {
-      return { 
-        ...state, 
-        jogadas: [...state.jogadas, action.payload.id], 
-        jogadasindex: [...state.jogadasindex, action.payload.index] 
-      }
-    }
+  const [state, dispatch] = useReducer(reducer, { cards, tentativas: 0, jogadas: [], jogadasindex: [], match: [] })
 
-    if (action.type === "reset_jogadas") {
-      return { ...state, jogadas: [], jogadasindex: [] }
-    }
-
-    if (action.type === "matcheted_card") {
-      return { ...state, match: [...state.match, state.jogadas[0]] }
-    }
-
-  }, { cards, tentativas: 0, jogadas: [], jogadasindex: [], match: [] })
+  const tentativasEfetuadasParaCombinarAsCartas = Math.floor(state.tentativas / 2)
 
   useEffect(() => {
     const primeiraCarta = state.jogadas[0]
@@ -57,7 +61,12 @@ const App = () => {
 
   return (
     <div className="app">
-      <div className="game-status"><span>Status: Jogando</span> <span>Tentativas: 0</span></div>
+      <div className="game-status">
+        <span>Status: Jogando</span> 
+        <span>Tentativas: {tentativasEfetuadasParaCombinarAsCartas}</span> 
+        <span>Pontos: 0</span> 
+        <span>Timer: 00:60</span>
+        </div>
       <main className="board">
         {state.cards.map((card, index) => (
           <div
