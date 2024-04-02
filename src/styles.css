@@ -19,7 +19,7 @@
 }
 
 /* Do an horizontal flip when you move the mouse over the flip box container */
-.flip-card:hover .flip-card-inner {
+.flip-card.hover .flip-card-inner {
   transform: rotateY(180deg);
 }
 
@@ -43,6 +43,9 @@
   background-color: dodgerblue;
   color: white;
   transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 * {
@@ -70,7 +73,7 @@
 
 .board {
   display: grid;
-  grid-template-columns: repeat(6, auto);
+  grid-template-columns: repeat(4, auto);
   gap: 1rem;
 }
 
