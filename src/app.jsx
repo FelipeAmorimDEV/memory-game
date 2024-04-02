@@ -2,14 +2,14 @@ import { useEffect, useReducer } from "react"
 import { Plus, Envelope, Atom, Backpack } from 'phosphor-react'
 
 const cards = [
-  { id: 1, element: <Plus size={60} weight="fill" color="#1a1a1a" /> },
-  { id: 1, element: <Plus size={60} weight="fill" color="#1a1a1a" /> },
-  { id: 2, element: <Atom size={60} weight="fill" color="#1a1a1a" /> },
-  { id: 2, element: <Atom size={60} weight="fill" color="#1a1a1a" /> },
-  { id: 3, element: <Envelope size={60} weight="fill" color="#1a1a1a" /> },
-  { id: 3, element: <Envelope size={60} weight="fill" color="#1a1a1a" /> },
-  { id: 4, element: <Backpack size={60} weight="fill" color="#1a1a1a" /> },
-  { id: 4, element: <Backpack size={60} weight="fill" color="#1a1a1a" /> },
+  { id: 1, element: <Plus size={60} weight="fill" color="#1a1a1a" />, points: 10},
+  { id: 1, element: <Plus size={60} weight="fill" color="#1a1a1a" />, points: 10},
+  { id: 2, element: <Atom size={60} weight="fill" color="#1a1a1a" />, points: 10},
+  { id: 2, element: <Atom size={60} weight="fill" color="#1a1a1a" />, points: 10},
+  { id: 3, element: <Envelope size={60} weight="fill" color="#1a1a1a" />, points: 10},
+  { id: 3, element: <Envelope size={60} weight="fill" color="#1a1a1a" />, points: 10},
+  { id: 4, element: <Backpack size={60} weight="fill" color="#1a1a1a" />, points: 10},
+  { id: 4, element: <Backpack size={60} weight="fill" color="#1a1a1a" />, points: 10},
 ]
 
 function reducer(state, action) {
@@ -27,22 +27,26 @@ function reducer(state, action) {
   }
 
   if (action.type === "matcheted_card") {
-    return { ...state, match: [...state.match, state.jogadas[0]] }
+    return { ...state, match: [...state.match, state.jogadas[0]], points: state.points + action.payload}
   }
 
 }
+
+const initialState = { cards, tentativas: 0, jogadas: [], jogadasindex: [], match: [], points: 0, }
 const App = () => {
-  const [state, dispatch] = useReducer(reducer, { cards, tentativas: 0, jogadas: [], jogadasindex: [], match: [] })
+  const [state, dispatch] = useReducer(reducer, initialState)
 
   const tentativasEfetuadasParaCombinarAsCartas = Math.floor(state.tentativas / 2)
-
+  const pointsPerMatch = state.cards[0].points
+  const maxPoints = state.cards.reduce((acc, card) => acc+= card.points / 2, 0)
+  
   useEffect(() => {
     const primeiraCarta = state.jogadas[0]
     const match = state.jogadas.filter((jogada) => primeiraCarta === jogada).length === 2
     const maxJogada = state.jogadas.length === 2
 
     if (match) {
-      dispatch({ type: 'matcheted_card' })
+      dispatch({ type: 'matcheted_card', payload: pointsPerMatch })
     }
 
     if (maxJogada) {
@@ -62,9 +66,9 @@ const App = () => {
   return (
     <div className="app">
       <div className="game-status">
-        <span>Status: Jogando</span> 
+        <span>Status: Jogando</span>
         <span>Tentativas: {tentativasEfetuadasParaCombinarAsCartas}</span> 
-        <span>Pontos: 0</span> 
+        <span>Pontos: <strong>{state.points}</strong> / {maxPoints}</span> 
         <span>Timer: 00:60</span>
         </div>
       <main className="board">
