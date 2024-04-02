@@ -57,7 +57,7 @@ function reducer(state, action) {
 }
 
 const initialState = { 
-  cards: initialCards, 
+  cards: shuffleArray(initialCards), 
   attempts: 0, 
   moves: [], 
   movesIndex: [], 
