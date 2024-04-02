@@ -62,7 +62,7 @@ function reducer(state, action) {
 }
 
 const initialState = { 
-    cards: shuffler(cards), 
+    cards, 
     tentativas: 0, 
     jogadas: [], 
     jogadasindex: [], 
@@ -104,7 +104,8 @@ const App = () => {
   function handleTurnCard(index, id) {
     const clicouNoMesmoCard = state.jogadasindex.some(ji => ji === index)
     const aCartaJaFoiVirada = state.match.includes(id)
-    if ( aCartaJaFoiVirada ||  clicouNoMesmoCard) {
+    const jaExisteDuasCartasViradas = state.jogadasindex.length === 2
+    if ( aCartaJaFoiVirada ||  clicouNoMesmoCard || jaExisteDuasCartasViradas) {
       return
     }
     dispatch({ type: 'turned_card', payload: { index, id } })
