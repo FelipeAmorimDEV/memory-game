@@ -161,3 +161,13 @@ button {
   color: dodgerblue;
   transition: all .2s;
 }
+
+.game-status span:first-of-type strong{
+  color: red;
+}
+.game-status span:nth-child(2) strong{
+  color: dodgerblue;
+}
+.game-status span:nth-child(3) strong{
+  color: dodgerblue;
+}

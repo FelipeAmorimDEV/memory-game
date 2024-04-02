@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react"
 import { Plus, Envelope, Atom, Backpack } from 'phosphor-react'
 
-const cards = [
+const initialCards = [
   { id: 1, element: <Plus size={60} weight="fill" color="#1a1a1a" />, points: 10 },
   { id: 1, element: <Plus size={60} weight="fill" color="#1a1a1a" />, points: 10 },
   { id: 2, element: <Atom size={60} weight="fill" color="#1a1a1a" />, points: 10 },
@@ -12,20 +12,15 @@ const cards = [
   { id: 4, element: <Backpack size={60} weight="fill" color="#1a1a1a" />, points: 10 },
 ]
 
-function shuffler(array) {
+function shuffleArray(array) {
   const newArray = [...array]
   let currentIndex = newArray.length;
 
-  // While there remain elements to shuffle...
-  while (currentIndex != 0) {
-
-    // Pick a remaining element...
+  while (currentIndex !== 0) {
     let randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
 
-    // And swap it with the current element.
-    [newArray[currentIndex], newArray[randomIndex]] = [
-      newArray[randomIndex], newArray[currentIndex]];
+    [newArray[currentIndex], newArray[randomIndex]] = [newArray[randomIndex], newArray[currentIndex]];
   }
 
   return newArray
@@ -37,18 +32,18 @@ function reducer(state, action) {
   if (action.type === "turned_card") {
     return {
       ...state,
-      jogadas: [...state.jogadas, action.payload.id],
-      jogadasindex: [...state.jogadasindex, action.payload.index],
-      tentativas: state.tentativas + 1
+      moves: [...state.moves, action.payload.id],
+      movesIndex: [...state.movesIndex, action.payload.index],
+      attempts: state.attempts + 1
     }
   }
 
-  if (action.type === "reset_jogadas") {
-    return { ...state, jogadas: [], jogadasindex: [] }
+  if (action.type === "reset_moves") {
+    return { ...state, moves: [], movesIndex: [] }
   }
 
-  if (action.type === "matcheted_card") {
-    return { ...state, match: [...state.match, state.jogadas[0]], points: state.points + pointsPerMatch }
+  if (action.type === "matched_card") {
+    return { ...state, match: [...state.match, state.moves[0]], points: state.points + pointsPerMatch }
   }
 
   if (action.type === "started_game") {
@@ -56,56 +51,56 @@ function reducer(state, action) {
   }
 
   if (action.type === "restarted_game") {
-    return { cards: shuffler(cards), appStatus: 'menu', points: 0, tentativas: 0, jogadas: [], jogadasindex: [], match: [] }
+    return { cards: shuffleArray(initialCards), appStatus: 'menu', points: 0, attempts: 0, moves: [], movesIndex: [], match: [] }
   }
 
 }
 
 const initialState = { 
-    cards, 
-    tentativas: 0, 
-    jogadas: [], 
-    jogadasindex: [], 
-    match: [], 
-    points: 0, 
-    appStatus: 'menu' 
-  }
+  cards: shuffleArray(initialCards), 
+  attempts: 0, 
+  moves: [], 
+  movesIndex: [], 
+  match: [], 
+  points: 0, 
+  appStatus: 'menu' 
+}
   
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const tentativasEfetuadasParaCombinarAsCartas = Math.floor(state.tentativas / 2)
+  const attemptsToMatchCards = Math.floor(state.attempts / 2)
   const maxPoints = state.cards.reduce((acc, card) => acc += card.points / 2, 0)
 
   useEffect(() => {
-    const primeiraCarta = state.jogadas[0]
-    const match = state.jogadas.filter((jogada) => primeiraCarta === jogada).length === 2
-    const maxJogada = state.jogadas.length === 2
+    const firstCard = state.moves[0]
+    const isMatch = state.moves.filter((move) => firstCard === move).length === 2
+    const maxMoves = state.moves.length === 2
 
-    if (match) {
-      dispatch({ type: 'matcheted_card' })
+    if (isMatch) {
+      dispatch({ type: 'matched_card' })
     }
 
-    if (maxJogada) {
+    if (maxMoves) {
       setTimeout(() => {
-        dispatch({ type: 'reset_jogadas' })
+        dispatch({ type: 'reset_moves' })
       }, 500)
     }
 
 
-  }, [state.jogadas])
+  }, [state.moves])
 
   useEffect(() => {
     if (state.match.length === state.cards.length / 2) {
-      setTimeout(() => alert("Parabéns, você encontrou todas as cartas!"), 200)
+      setTimeout(() => alert("Congratulations, you've matched all the cards!"), 200)
     }
   }, [state.cards.length, state.match.length])
 
   function handleTurnCard(index, id) {
-    const clicouNoMesmoCard = state.jogadasindex.some(ji => ji === index)
-    const aCartaJaFoiVirada = state.match.includes(id)
-    const jaExisteDuasCartasViradas = state.jogadasindex.length === 2
-    if ( aCartaJaFoiVirada ||  clicouNoMesmoCard || jaExisteDuasCartasViradas) {
+    const clickedSameCard = state.movesIndex.some(mi => mi === index)
+    const cardAlreadyTurned = state.match.includes(id)
+    const alreadyTwoTurnedCards = state.movesIndex.length === 2
+    if (cardAlreadyTurned || clickedSameCard || alreadyTwoTurnedCards) {
       return
     }
     dispatch({ type: 'turned_card', payload: { index, id } })
@@ -123,22 +118,22 @@ const App = () => {
     <div className="app">
       {state.appStatus === 'menu' && (
         <div className="menu">
-          <h1>Jogo da Memória</h1>
-          <button onClick={handleStartGame}>Começar</button>
+          <h1>Memory Game</h1>
+          <button onClick={handleStartGame}>Start</button>
         </div>
       )}
       {state.appStatus === 'ready' && (
         <>
           <div className="game-status">
-            <span>Tentativas: {tentativasEfetuadasParaCombinarAsCartas}</span>
-            <span>Pontos: <strong>{state.points}</strong> / {maxPoints}</span>
-            <span>Timer: 00:60</span>
+            <span>Attempts: <strong>{attemptsToMatchCards}</strong></span>
+            <span>Points: <strong>{state.points}</strong> / <strong>{maxPoints}</strong></span>
+            <span>Timer: <strong>00:60</strong></span>
           </div>
           <main className="board">
             {state.cards.map((card, index) => (
               <div
                 key={index} data-id={card.id}
-                className={`flip-card ${state.jogadasindex.includes(index) || state.match.includes(card.id) ? 'hover' : ''}`}
+                className={`flip-card ${state.movesIndex.includes(index) || state.match.includes(card.id) ? 'hover' : ''}`}
                 onClick={() => handleTurnCard(index, card.id)}
               >
                 <div className="flip-card-inner">
@@ -149,7 +144,7 @@ const App = () => {
                 </div>
               </div>
             ))}
-            <button className="restart-btn" onClick={handleRestartGame}>Reiniciar</button>
+            <button className="restart-btn" onClick={handleRestartGame}>Restart</button>
           </main>
         </>
       )}
