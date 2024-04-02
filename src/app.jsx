@@ -55,13 +55,22 @@ function reducer(state, action) {
     return { ...state, appStatus: 'ready' }
   }
 
-  if(action.type === "restarted_game") {
-    return {cards: shuffler(cards), appStatus: 'menu', points: 0, tentativas: 0, jogadas: [], jogadasindex: [], match: []}
+  if (action.type === "restarted_game") {
+    return { cards: shuffler(cards), appStatus: 'menu', points: 0, tentativas: 0, jogadas: [], jogadasindex: [], match: [] }
   }
 
 }
 
-const initialState = { cards: shuffler(cards), tentativas: 0, jogadas: [], jogadasindex: [], match: [], points: 0, appStatus: 'menu' }
+const initialState = { 
+    cards: shuffler(cards), 
+    tentativas: 0, 
+    jogadas: [], 
+    jogadasindex: [], 
+    match: [], 
+    points: 0, 
+    appStatus: 'menu' 
+  }
+  
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -90,13 +99,14 @@ const App = () => {
     if (state.match.length === state.cards.length / 2) {
       setTimeout(() => alert("Parabéns, você encontrou todas as cartas!"), 200)
     }
-  },[state.cards.length, state.match.length])
+  }, [state.cards.length, state.match.length])
 
   function handleTurnCard(index, id) {
-    if (state.match.includes(id)) {
+    const clicouNoMesmoCard = state.jogadasindex.some(ji => ji === index)
+    const aCartaJaFoiVirada = state.match.includes(id)
+    if ( aCartaJaFoiVirada ||  clicouNoMesmoCard) {
       return
     }
-
     dispatch({ type: 'turned_card', payload: { index, id } })
   }
 
