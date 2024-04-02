@@ -12,6 +12,25 @@ const cards = [
   { id: 4, element: <Backpack size={60} weight="fill" color="#1a1a1a" />, points: 10 },
 ]
 
+function shuffler(array) {
+  const newArray = [...array]
+  let currentIndex = newArray.length;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [newArray[currentIndex], newArray[randomIndex]] = [
+      newArray[randomIndex], newArray[currentIndex]];
+  }
+
+  return newArray
+}
+
 function reducer(state, action) {
   const pointsPerMatch = state.cards[0].points
 
@@ -37,12 +56,12 @@ function reducer(state, action) {
   }
 
   if(action.type === "restarted_game") {
-    return {...state, appStatus: 'menu', points: 0, tentativas: 0, jogadas: [], jogadasindex: [], match: []}
+    return {cards: shuffler(cards), appStatus: 'menu', points: 0, tentativas: 0, jogadas: [], jogadasindex: [], match: []}
   }
 
 }
 
-const initialState = { cards, tentativas: 0, jogadas: [], jogadasindex: [], match: [], points: 0, appStatus: 'menu' }
+const initialState = { cards: shuffler(cards), tentativas: 0, jogadas: [], jogadasindex: [], match: [], points: 0, appStatus: 'menu' }
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -59,17 +78,19 @@ const App = () => {
     }
 
     if (maxJogada) {
-      console.log('timeout')
       setTimeout(() => {
         dispatch({ type: 'reset_jogadas' })
       }, 500)
     }
 
-    if (state.match.length === state.cards.length / 2) {
-      alert("Parabéns, você encontrou todas as cartas!")
-    }
 
   }, [state.jogadas])
+
+  useEffect(() => {
+    if (state.match.length === state.cards.length / 2) {
+      setTimeout(() => alert("Parabéns, você encontrou todas as cartas!"), 200)
+    }
+  },[state.cards.length, state.match.length])
 
   function handleTurnCard(index, id) {
     if (state.match.includes(id)) {
