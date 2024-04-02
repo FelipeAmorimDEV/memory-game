@@ -30,11 +30,15 @@ function reducer(state, action) {
 
   if (action.type === "matcheted_card") {
     return { ...state, match: [...state.match, state.jogadas[0]], points: state.points + pointsPerMatch }
-  } 
+  }
+
+  if(action.type === "started_game") {
+    return {...state, appStatus: 'ready'}
+  }
 
 }
 
-const initialState = { cards, tentativas: 0, jogadas: [], jogadasindex: [], match: [], points: 0, appStatus: 'ready' }
+const initialState = { cards, tentativas: 0, jogadas: [], jogadasindex: [], match: [], points: 0, appStatus: 'menu' }
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -47,7 +51,7 @@ const App = () => {
     const maxJogada = state.jogadas.length === 2
 
     if (match) {
-      dispatch({ type: 'matcheted_card'})
+      dispatch({ type: 'matcheted_card' })
     }
 
     if (maxJogada) {
@@ -67,13 +71,22 @@ const App = () => {
     dispatch({ type: 'turned_card', payload: { index, id } })
   }
 
+  function handleStartGame() {
+    dispatch({ type: 'started_game' })
+  }
+
 
   return (
     <div className="app">
+      {state.appStatus === 'menu' && (
+        <div className="menu">
+          <h1>Jogo da Memória</h1>
+          <button onClick={handleStartGame}>Começar</button>
+        </div>
+      )}
       {state.appStatus === 'ready' && (
         <>
           <div className="game-status">
-            <span>Status: Jogando</span>
             <span>Tentativas: {tentativasEfetuadasParaCombinarAsCartas}</span>
             <span>Pontos: <strong>{state.points}</strong> / {maxPoints}</span>
             <span>Timer: 00:60</span>
