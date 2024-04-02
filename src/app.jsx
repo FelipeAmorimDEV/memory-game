@@ -26,10 +26,20 @@ const App = () => {
       return { ...state, jogadas: [], jogadasindex: [] }
     }
 
+    if (action.type === "matcheted_card") {
+      return { ...state, match: [...state.match, state.jogadas[0]] }
+    }
+
   }, { cards, tentativas: 0, jogadas: [], jogadasindex: [], match: [] })
 
   useEffect(() => {
+    const primeiraCarta = state.jogadas[0]
+    const match = state.jogadas.filter((jogada) => primeiraCarta === jogada).length === 2
     const maxJogada = state.jogadas.length === 2
+
+    if (match) {
+      dispatch({ type: 'matcheted_card' })
+    }
 
     if (maxJogada) {
       console.log('timeout')
@@ -52,7 +62,7 @@ const App = () => {
         {state.cards.map((card, index) => (
           <div
             key={index} data-id={card.id}
-            className={`flip-card ${state.jogadasindex.includes(index) ? 'hover' : ''}`}
+            className={`flip-card ${state.jogadasindex.includes(index) || state.match.includes(card.id)? 'hover' : ''}`}
             onClick={() => handleTurnCard(index, card.id)}
           >
             <div className="flip-card-inner">
