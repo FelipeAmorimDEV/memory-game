@@ -56,16 +56,16 @@ function reducer(state, action) {
 
 }
 
-const initialState = { 
-  cards: shuffleArray(initialCards), 
-  attempts: 0, 
-  moves: [], 
-  movesIndex: [], 
-  match: [], 
-  points: 0, 
-  appStatus: 'menu' 
+const initialState = {
+  cards: shuffleArray(initialCards),
+  attempts: 0,
+  moves: [],
+  movesIndex: [],
+  match: [],
+  points: 0,
+  appStatus: 'menu'
 }
-  
+
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -86,8 +86,6 @@ const App = () => {
         dispatch({ type: 'reset_moves' })
       }, 500)
     }
-
-
   }, [state.moves])
 
   useEffect(() => {
